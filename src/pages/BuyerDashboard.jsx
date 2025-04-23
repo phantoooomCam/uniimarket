@@ -1,20 +1,52 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import "../styles/Dashboard.css"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import "../styles/Dashboard.css";
+import hamburguesa from "../assets/hamburguesa.png";
+import pizza from "../assets/pizza.jpeg";
 
 const BuyerDashboard = () => {
-  const [activeCategory, setActiveCategory] = useState("food")
-  const [searchTerm, setSearchTerm] = useState("")
+  const [activeCategory, setActiveCategory] = useState("food");
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Datos de ejemplo para productos
   const products = [
-    { id: 1, name: "Pizza Familiar", price: 12.99, category: "food", image: "/placeholder.svg?height=180&width=250" },
-    { id: 2, name: "Hamburguesa Doble", price: 8.5, category: "food", image: "/placeholder.svg?height=180&width=250" },
-    { id: 3, name: "Papas Fritas", price: 3.99, category: "snacks", image: "/placeholder.svg?height=180&width=250" },
-    { id: 4, name: "Doritos", price: 2.5, category: "snacks", image: "/placeholder.svg?height=180&width=250" },
-    { id: 5, name: "Cuaderno", price: 1.99, category: "material", image: "/placeholder.svg?height=180&width=250" },
+    {
+      id: 1,
+      name: "Pizza Familiar",
+      price: 20,
+      category: "food",
+      image: pizza,
+    },
+    {
+      id: 2,
+      name: "Hamburguesa Doble",
+      price: 25,
+      category: "food",
+      image: hamburguesa,
+    },
+    {
+      id: 3,
+      name: "Papas Fritas",
+      price: 3.99,
+      category: "snacks",
+      image: "/placeholder.svg?height=180&width=250",
+    },
+    {
+      id: 4,
+      name: "Doritos",
+      price: 2.5,
+      category: "snacks",
+      image: "/placeholder.svg?height=180&width=250",
+    },
+    {
+      id: 5,
+      name: "Cuaderno",
+      price: 1.99,
+      category: "material",
+      image: "/placeholder.svg?height=180&width=250",
+    },
     {
       id: 6,
       name: "Bolígrafos (pack)",
@@ -22,16 +54,28 @@ const BuyerDashboard = () => {
       category: "material",
       image: "/placeholder.svg?height=180&width=250",
     },
-    { id: 7, name: "Audífonos", price: 15.99, category: "others", image: "/placeholder.svg?height=180&width=250" },
-    { id: 8, name: "Cargador USB", price: 7.5, category: "others", image: "/placeholder.svg?height=180&width=250" },
-  ]
+    {
+      id: 7,
+      name: "Audífonos",
+      price: 15.99,
+      category: "others",
+      image: "/placeholder.svg?height=180&width=250",
+    },
+    {
+      id: 8,
+      name: "Cargador USB",
+      price: 7.5,
+      category: "others",
+      image: "/placeholder.svg?height=180&width=250",
+    },
+  ];
 
   // Filtrar productos por categoría y término de búsqueda
   const filteredProducts = products.filter(
     (product) =>
       (activeCategory === "all" || product.category === activeCategory) &&
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="dashboard-container">
@@ -67,19 +111,34 @@ const BuyerDashboard = () => {
       </header>
 
       <div className="category-tabs">
-        <button className={activeCategory === "all" ? "active" : ""} onClick={() => setActiveCategory("all")}>
+        <button
+          className={activeCategory === "all" ? "active" : ""}
+          onClick={() => setActiveCategory("all")}
+        >
           Todos
         </button>
-        <button className={activeCategory === "food" ? "active" : ""} onClick={() => setActiveCategory("food")}>
+        <button
+          className={activeCategory === "food" ? "active" : ""}
+          onClick={() => setActiveCategory("food")}
+        >
           Comida
         </button>
-        <button className={activeCategory === "snacks" ? "active" : ""} onClick={() => setActiveCategory("snacks")}>
+        <button
+          className={activeCategory === "snacks" ? "active" : ""}
+          onClick={() => setActiveCategory("snacks")}
+        >
           Snacks
         </button>
-        <button className={activeCategory === "material" ? "active" : ""} onClick={() => setActiveCategory("material")}>
+        <button
+          className={activeCategory === "material" ? "active" : ""}
+          onClick={() => setActiveCategory("material")}
+        >
           Material
         </button>
-        <button className={activeCategory === "others" ? "active" : ""} onClick={() => setActiveCategory("others")}>
+        <button
+          className={activeCategory === "others" ? "active" : ""}
+          onClick={() => setActiveCategory("others")}
+        >
           Otros
         </button>
       </div>
@@ -88,7 +147,10 @@ const BuyerDashboard = () => {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <div key={product.id} className="product-card">
-              <img src={product.image || "/placeholder.svg"} alt={product.name} />
+              <img
+                src={product.image || "/placeholder.svg"}
+                alt={product.name}
+              />
               <h3>{product.name}</h3>
               <p className="price">${product.price.toFixed(2)}</p>
               <button className="add-to-cart">Añadir al carrito</button>
@@ -105,7 +167,7 @@ const BuyerDashboard = () => {
         <p>&copy; 2025 UPIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default BuyerDashboard
+export default BuyerDashboard;
