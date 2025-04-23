@@ -44,8 +44,8 @@ const AdminDashboard = () => {
     <div className="dashboard-container admin-dashboard">
       <header className="dashboard-header">
         <div className="logo">
-          <img src="/logo.png" alt="UPIIMarket Logo" />
-          <h1>UPIIMarket</h1>
+          <img src="/logo.png" alt=" Logo" />
+          <h1>UNIIMarket</h1>
           <span className="admin-badge">Administrador</span>
         </div>
         <nav className="user-nav">
@@ -312,7 +312,7 @@ const AdminDashboard = () => {
       </main>
 
       <footer className="dashboard-footer">
-        <p>&copy; 2025 UPIIMarket - Todos los derechos reservados</p>
+        <p>&copy; 2025 UNIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
   )

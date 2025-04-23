@@ -5,6 +5,12 @@ import { Link } from "react-router-dom";
 import "../styles/Dashboard.css";
 import hamburguesa from "../assets/hamburguesa.png";
 import pizza from "../assets/pizza.jpeg";
+import papas from "../assets/papas.jpeg";
+import doritos from "../assets/doritos.jpeg";
+import cuadernos from "../assets/cuadernos.jpg";
+import boligrafos from "../assets/boligrafos.jpg";
+import audifonos from "../assets/audifonos.jpg";
+import cargador from "../assets/cargador.jpeg";
 
 const BuyerDashboard = () => {
   const [activeCategory, setActiveCategory] = useState("food");
@@ -31,42 +37,42 @@ const BuyerDashboard = () => {
       name: "Papas Fritas",
       price: 3.99,
       category: "snacks",
-      image: "/placeholder.svg?height=180&width=250",
+      image: papas,
     },
     {
       id: 4,
       name: "Doritos",
       price: 2.5,
       category: "snacks",
-      image: "/placeholder.svg?height=180&width=250",
+      image: doritos,
     },
     {
       id: 5,
       name: "Cuaderno",
       price: 1.99,
       category: "material",
-      image: "/placeholder.svg?height=180&width=250",
+      image: cuadernos,
     },
     {
       id: 6,
       name: "Bolígrafos (pack)",
       price: 3.25,
       category: "material",
-      image: "/placeholder.svg?height=180&width=250",
+      image: boligrafos,
     },
     {
       id: 7,
       name: "Audífonos",
       price: 15.99,
       category: "others",
-      image: "/placeholder.svg?height=180&width=250",
+      image: audifonos,
     },
     {
       id: 8,
       name: "Cargador USB",
       price: 7.5,
       category: "others",
-      image: "/placeholder.svg?height=180&width=250",
+      image: cargador,
     },
   ];
 
@@ -82,7 +88,7 @@ const BuyerDashboard = () => {
       <header className="dashboard-header">
         <div className="logo">
           <img src="/logo.png" alt="UPIIMarket Logo" />
-          <h1>UPIIMarket</h1>
+          <h1>UNIIMarket</h1>
         </div>
         <div className="search-bar">
           <input
@@ -164,7 +170,7 @@ const BuyerDashboard = () => {
       </main>
 
       <footer className="dashboard-footer">
-        <p>&copy; 2025 UPIIMarket - Todos los derechos reservados</p>
+        <p>&copy; 2025 UNIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
   );

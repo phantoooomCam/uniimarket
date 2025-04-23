@@ -37,8 +37,8 @@ const SellerDashboard = () => {
     <div className="dashboard-container seller-dashboard">
       <header className="dashboard-header">
         <div className="logo">
-          <img src="/logo.png" alt="UPIIMarket Logo" />
-          <h1>UPIIMarket</h1>
+          <img src="/logo.png" alt="UNIIMarket Logo" />
+          <h1>UNIIMarket</h1>
           <span className="seller-badge">Vendedor</span>
         </div>
         <nav className="user-nav">
@@ -264,7 +264,7 @@ const SellerDashboard = () => {
       </main>
 
       <footer className="dashboard-footer">
-        <p>&copy; 2025 UPIIMarket - Todos los derechos reservados</p>
+        <p>&copy; 2025 UNIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
   )
