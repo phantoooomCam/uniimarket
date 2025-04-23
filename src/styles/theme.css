@@ -1,0 +1,28 @@
+:root {
+    /* Colores principales basados en el logo */
+    --primary-red: #e74c3c;
+    --primary-yellow: #f1c40f;
+  
+    /* Variaciones de los colores principales */
+    --primary-red-dark: #c0392b;
+    --primary-yellow-dark: #d4ac0d;
+  
+    /* Colores neutrales */
+    --neutral-white: #ffffff;
+    --neutral-light: #f8f9fa;
+    --neutral-gray: #e9ecef;
+    --neutral-dark: #343a40;
+  
+    /* Radios de borde */
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 20px;
+    --border-radius-xl: 28px;
+    --border-radius-full: 9999px;
+  
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
