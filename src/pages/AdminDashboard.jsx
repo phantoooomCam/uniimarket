@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Link } from "react-router-dom"
 import "../styles/Dashboard.css"
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview")
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const profileRef = useRef(null)
 
   // Datos de ejemplo para usuarios
   const users = [
@@ -40,6 +42,29 @@ const AdminDashboard = () => {
     revenue: 15678.9,
   }
 
+  // Cerrar el menú cuando se hace clic fuera de él
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
+
+  const handleProfileClick = () => {
+    setIsProfileOpen(!isProfileOpen)
+  }
+
+  const handleLogout = () => {
+    // Aquí irá tu lógica de cierre de sesión
+    console.log("Cerrando sesión...")
+  }
+
   return (
     <div className="dashboard-container admin-dashboard">
       <header className="dashboard-header">
@@ -52,12 +77,20 @@ const AdminDashboard = () => {
           <Link to="/notifications" className="nav-item">
             Notificaciones
           </Link>
-          <div className="user-profile">
-            <img src="/placeholder.svg?height=40&width=40" alt="Perfil" />
-            <div className="dropdown-menu">
-              <Link to="/profile">Mi Perfil</Link>
-              <Link to="/settings">Configuración</Link>
-              <Link to="/logout">Cerrar Sesión</Link>
+          <div className="user-profile" ref={profileRef}>
+            <button className="profile-button" onClick={handleProfileClick}>
+              <img src="/placeholder.svg?height=40&width=40" alt="Perfil" />
+            </button>
+            <div className={`dropdown-menu ${isProfileOpen ? "show" : ""}`}>
+              <button className="dropdown-item" onClick={() => console.log("Perfil")}>
+                Mi Perfil
+              </button>
+              <button className="dropdown-item" onClick={() => console.log("Configuración")}>
+                Configuración
+              </button>
+              <button className="dropdown-item logout" onClick={handleLogout}>
+                Cerrar Sesión
+              </button>
             </div>
           </div>
         </nav>

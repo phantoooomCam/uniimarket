@@ -1,16 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { Eye, EyeOff } from "lucide-react"
 import "../styles/Auth.css"
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+    correo: "",
+    contraseña: "",
   })
 
   const [errors, setErrors] = useState({})
+  const [showPassword, setShowPassword] = useState(false)
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" })
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -23,40 +27,70 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {}
 
-    if (!formData.email.trim()) {
-      newErrors.email = "El correo electrónico es obligatorio"
+    if (!formData.correo.trim()) {
+      newErrors.correo = "El correo electrónico es obligatorio"
     }
 
-    if (!formData.password) {
-      newErrors.password = "La contraseña es obligatoria"
+    if (!formData.contraseña) {
+      newErrors.contraseña = "La contraseña es obligatoria"
     }
 
     return newErrors
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const newErrors = validateForm()
 
     if (Object.keys(newErrors).length === 0) {
-      // Aquí iría la lógica para enviar los datos al servidor
-      console.log("Datos de inicio de sesión:", formData)
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/login", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            correo: formData.correo,
+            contraseña: formData.contraseña,
+          }),
+        })
 
-      // Simulación de inicio de sesión
-      // En un caso real, esto vendría del backend
-      const userType = "buyer" // Esto sería determinado por la respuesta del servidor
+        if (response.ok) {
+          const data = await response.json()
+          const userRole = data.usuario.rol
 
-      // Redireccionar según el tipo de usuario
-      if (userType === "buyer") {
-        window.location.href = "/buyer-dashboard"
-      } else if (userType === "seller") {
-        window.location.href = "/seller-dashboard"
-      } else if (userType === "admin") {
-        window.location.href = "/admin-dashboard"
+          // Redirección según el rol
+          if (userRole === "cliente") {
+            navigate("/buyer-dashboard")
+          } else if (userRole === "vendedor") {
+            navigate("/seller-dashboard")
+          } else if (userRole === "admin") {
+            navigate("/admin-dashboard")
+          }
+        } else {
+          const data = await response.json()
+          setNotification({
+            show: true,
+            message: data.error || "Error al iniciar sesión",
+            type: "error",
+          })
+        }
+      } catch (err) {
+        console.error(err)
+        setNotification({
+          show: true,
+          message: "Error de conexión con el servidor",
+          type: "error",
+        })
       }
     } else {
       setErrors(newErrors)
     }
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
   }
 
   return (
@@ -72,25 +106,35 @@ const Login = () => {
             <input
               type="email"
               id="email"
-              name="email"
-              value={formData.email}
+              name="correo"
+              value={formData.correo}
               onChange={handleChange}
               placeholder="Ingresa tu correo electrónico"
             />
-            {errors.email && <span className="error">{errors.email}</span>}
+            {errors.correo && <span className="error">{errors.correo}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="password">Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Ingresa tu contraseña"
-            />
-            {errors.password && <span className="error">{errors.password}</span>}
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                name="contraseña"
+                value={formData.contraseña}
+                onChange={handleChange}
+                placeholder="Ingresa tu contraseña"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {errors.contraseña && <span className="error">{errors.contraseña}</span>}
           </div>
 
           <div className="forgot-password">
@@ -106,6 +150,14 @@ const Login = () => {
           ¿No tienes una cuenta? <Link to="/register">Regístrate</Link>
         </div>
       </div>
+      {notification.show && (
+        <div className={`notification ${notification.type}`}>
+          {notification.message}
+          <button className="notification-close" onClick={() => setNotification({ ...notification, show: false })}>
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }

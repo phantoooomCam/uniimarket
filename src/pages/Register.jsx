@@ -1,19 +1,27 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { Eye, EyeOff } from "lucide-react"
 import "../styles/Auth.css"
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
+    nombre: "",
+    apellidos: "",
+    correo: "",
+    contraseña: "",
     confirmPassword: "",
-    userType: "buyer", // Por defecto, el usuario es comprador
+    rol: "cliente",
+    telefono: "",
+    escuela: "",
   })
 
   const [errors, setErrors] = useState({})
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [notification, setNotification] = useState({ show: false, message: "", type: "" })
+  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -26,41 +34,100 @@ const Register = () => {
   const validateForm = () => {
     const newErrors = {}
 
-    if (!formData.name.trim()) {
-      newErrors.name = "El nombre es obligatorio"
+    if (!formData.nombre.trim()) {
+      newErrors.nombre = "El nombre es obligatorio"
     }
 
-    if (!formData.email.trim()) {
-      newErrors.email = "El correo electrónico es obligatorio"
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Correo electrónico inválido"
+    if (!formData.apellidos.trim()) {
+      newErrors.apellidos = "Los apellidos son obligatorios"
     }
 
-    if (!formData.password) {
-      newErrors.password = "La contraseña es obligatoria"
-    } else if (formData.password.length < 6) {
-      newErrors.password = "La contraseña debe tener al menos 6 caracteres"
+    if (!formData.correo.trim()) {
+      newErrors.correo = "El correo electrónico es obligatorio"
+    } else if (!/\S+@\S+\.\S+/.test(formData.correo)) {
+      newErrors.correo = "Correo electrónico inválido"
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.contraseña) {
+      newErrors.contraseña = "La contraseña es obligatoria"
+    } else if (formData.contraseña.length < 6) {
+      newErrors.contraseña = "La contraseña debe tener al menos 6 caracteres"
+    }
+
+    if (formData.contraseña !== formData.confirmPassword) {
       newErrors.confirmPassword = "Las contraseñas no coinciden"
+    }
+
+    if (!formData.telefono.trim()) {
+      newErrors.telefono = "El teléfono es obligatorio"
+    }
+
+    if (!formData.escuela.trim()) {
+      newErrors.escuela = "La escuela es obligatoria"
     }
 
     return newErrors
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     const newErrors = validateForm()
 
     if (Object.keys(newErrors).length === 0) {
-      // Aquí iría la lógica para enviar los datos al servidor
-      console.log("Datos de registro:", formData)
-      alert("Registro exitoso!")
-      // Redireccionar al login o a la página principal
+      try {
+        const response = await fetch("http://localhost:3000/api/auth/register", {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: formData.nombre,
+            apellidos: formData.apellidos,
+            correo: formData.correo,
+            contraseña: formData.contraseña,
+            rol: formData.rol,
+            telefono: formData.telefono,
+            escuela: formData.escuela,
+          }),
+        })
+
+        if (response.ok) {
+          setNotification({
+            show: true,
+            message: "Registro exitoso",
+            type: "success",
+          })
+          setTimeout(() => {
+            navigate("/")
+          }, 1500)
+        } else {
+          const data = await response.json()
+          setNotification({
+            show: true,
+            message: data.error || "Error en el registro",
+            type: "error",
+          })
+        }
+      } catch (err) {
+        console.error(err)
+        setNotification({
+          show: true,
+          message: "Error al conectar con el servidor",
+          type: "error",
+        })
+      }
     } else {
       setErrors(newErrors)
     }
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword)
   }
 
   return (
@@ -72,62 +139,122 @@ const Register = () => {
         <h2>Crear Cuenta</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="name">Nombre completo</label>
+            <label htmlFor="nombre">Nombre</label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="nombre"
+              name="nombre"
+              value={formData.nombre}
               onChange={handleChange}
-              placeholder="Ingresa tu nombre completo"
+              placeholder="Ingresa tu nombre"
             />
-            {errors.name && <span className="error">{errors.name}</span>}
+            {errors.nombre && <span className="error">{errors.nombre}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="email">Correo electrónico</label>
+            <label htmlFor="apellidos">Apellidos</label>
+            <input
+              type="text"
+              id="apellidos"
+              name="apellidos"
+              value={formData.apellidos}
+              onChange={handleChange}
+              placeholder="Ingresa tus apellidos"
+            />
+            {errors.apellidos && <span className="error">{errors.apellidos}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="correo">Correo electrónico</label>
             <input
               type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              id="correo"
+              name="correo"
+              value={formData.correo}
               onChange={handleChange}
               placeholder="Ingresa tu correo electrónico"
             />
-            {errors.email && <span className="error">{errors.email}</span>}
+            {errors.correo && <span className="error">{errors.correo}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Contraseña</label>
+            <label htmlFor="telefono">Teléfono</label>
             <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
+              type="tel"
+              id="telefono"
+              name="telefono"
+              value={formData.telefono}
               onChange={handleChange}
-              placeholder="Ingresa tu contraseña"
+              placeholder="Ingresa tu número de teléfono"
             />
-            {errors.password && <span className="error">{errors.password}</span>}
+            {errors.telefono && <span className="error">{errors.telefono}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="escuela">Escuela</label>
+            <select id="escuela" name="escuela" value={formData.escuela} onChange={handleChange}>
+              <option value="">Selecciona una escuela</option>
+              <option value="UPIITA">UPIITA</option>
+              <option value="UPIICSA">UPIICSA</option>
+              <option value="ESIME">ESIME</option>
+              <option value="UPIIBI">UPIIBI</option>
+              <option value="ESIA">ESIA</option>
+              <option value="ESCA">ESCA</option>
+            </select>
+            {errors.escuela && <span className="error">{errors.escuela}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="contraseña">Contraseña</label>
+            <div className="password-input-container">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="contraseña"
+                name="contraseña"
+                value={formData.contraseña}
+                onChange={handleChange}
+                placeholder="Ingresa tu contraseña"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={togglePasswordVisibility}
+                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+            {errors.contraseña && <span className="error">{errors.contraseña}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="confirmPassword">Confirmar contraseña</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirma tu contraseña"
-            />
+            <div className="password-input-container">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                placeholder="Confirma tu contraseña"
+              />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={toggleConfirmPasswordVisibility}
+                aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              >
+                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
             {errors.confirmPassword && <span className="error">{errors.confirmPassword}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="userType">Tipo de usuario</label>
-            <select id="userType" name="userType" value={formData.userType} onChange={handleChange}>
-              <option value="buyer">Comprador</option>
-              <option value="seller">Vendedor</option>
+            <label htmlFor="rol">Tipo de usuario</label>
+            <select id="rol" name="rol" value={formData.rol} onChange={handleChange}>
+              <option value="cliente">Comprador</option>
+              <option value="vendedor">Vendedor</option>
             </select>
           </div>
 
@@ -140,6 +267,14 @@ const Register = () => {
           ¿Ya tienes una cuenta? <Link to="/login">Iniciar sesión</Link>
         </div>
       </div>
+      {notification.show && (
+        <div className={`notification ${notification.type}`}>
+          {notification.message}
+          <button className="notification-close" onClick={() => setNotification({ ...notification, show: false })}>
+            ×
+          </button>
+        </div>
+      )}
     </div>
   )
 }
