@@ -1,22 +1,23 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
-import "../styles/Dashboard.css"
-import hamburguesa from "../assets/hamburguesa.png"
-import pizza from "../assets/pizza.jpeg"
-import papas from "../assets/papas.jpeg"
-import doritos from "../assets/doritos.jpeg"
-import cuadernos from "../assets/cuadernos.jpg"
-import boligrafos from "../assets/boligrafos.jpg"
-import audifonos from "../assets/audifonos.jpg"
-import cargador from "../assets/cargador.jpeg"
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Dashboard.css";
+import hamburguesa from "../assets/hamburguesa.png";
+import pizza from "../assets/pizza.jpeg";
+import papas from "../assets/papas.jpeg";
+import doritos from "../assets/doritos.jpeg";
+import cuadernos from "../assets/cuadernos.jpg";
+import boligrafos from "../assets/boligrafos.jpg";
+import audifonos from "../assets/audifonos.jpg";
+import cargador from "../assets/cargador.jpeg";
 
 const BuyerDashboard = () => {
-  const [activeCategory, setActiveCategory] = useState("food")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const profileRef = useRef(null)
+  const [activeCategory, setActiveCategory] = useState("food");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const navigate = useNavigate();
 
   // Datos de ejemplo para productos
   const products = [
@@ -76,37 +77,46 @@ const BuyerDashboard = () => {
       category: "others",
       image: cargador,
     },
-  ]
+  ];
 
   // Filtrar productos por categoría y término de búsqueda
   const filteredProducts = products.filter(
     (product) =>
       (activeCategory === "all" || product.category === activeCategory) &&
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+      product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Cerrar el menú cuando se hace clic fuera de él
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false)
+        setIsProfileOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleProfileClick = () => {
-    setIsProfileOpen(!isProfileOpen)
-  }
+    setIsProfileOpen(!isProfileOpen);
+  };
 
-  const handleLogout = () => {
-    // Aquí irá tu lógica de cierre de sesión
-    console.log("Cerrando sesión...")
-  }
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      navigate("/");
+    } catch (err) {
+      console.error("Error al cerrar sesión:", err);
+      alert("No se pudo cerrar sesión correctamente.");
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -135,10 +145,16 @@ const BuyerDashboard = () => {
               <img src="/placeholder.svg?height=40&width=40" alt="Perfil" />
             </button>
             <div className={`dropdown-menu ${isProfileOpen ? "show" : ""}`}>
-              <button className="dropdown-item" onClick={() => console.log("Perfil")}>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Perfil")}
+              >
                 Mi Perfil
               </button>
-              <button className="dropdown-item" onClick={() => console.log("Configuración")}>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Configuración")}
+              >
                 Configuración
               </button>
               <button className="dropdown-item logout" onClick={handleLogout}>
@@ -150,19 +166,34 @@ const BuyerDashboard = () => {
       </header>
 
       <div className="category-tabs">
-        <button className={activeCategory === "all" ? "active" : ""} onClick={() => setActiveCategory("all")}>
+        <button
+          className={activeCategory === "all" ? "active" : ""}
+          onClick={() => setActiveCategory("all")}
+        >
           Todos
         </button>
-        <button className={activeCategory === "food" ? "active" : ""} onClick={() => setActiveCategory("food")}>
+        <button
+          className={activeCategory === "food" ? "active" : ""}
+          onClick={() => setActiveCategory("food")}
+        >
           Comida
         </button>
-        <button className={activeCategory === "snacks" ? "active" : ""} onClick={() => setActiveCategory("snacks")}>
+        <button
+          className={activeCategory === "snacks" ? "active" : ""}
+          onClick={() => setActiveCategory("snacks")}
+        >
           Snacks
         </button>
-        <button className={activeCategory === "material" ? "active" : ""} onClick={() => setActiveCategory("material")}>
+        <button
+          className={activeCategory === "material" ? "active" : ""}
+          onClick={() => setActiveCategory("material")}
+        >
           Material
         </button>
-        <button className={activeCategory === "others" ? "active" : ""} onClick={() => setActiveCategory("others")}>
+        <button
+          className={activeCategory === "others" ? "active" : ""}
+          onClick={() => setActiveCategory("others")}
+        >
           Otros
         </button>
       </div>
@@ -171,7 +202,10 @@ const BuyerDashboard = () => {
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product) => (
             <div key={product.id} className="product-card">
-              <img src={product.image || "/placeholder.svg"} alt={product.name} />
+              <img
+                src={product.image || "/placeholder.svg"}
+                alt={product.name}
+              />
               <h3>{product.name}</h3>
               <p className="price">${product.price.toFixed(2)}</p>
               <button className="add-to-cart">Añadir al carrito</button>
@@ -188,7 +222,7 @@ const BuyerDashboard = () => {
         <p>&copy; 2025 UNIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default BuyerDashboard
+export default BuyerDashboard;

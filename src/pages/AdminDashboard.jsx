@@ -1,18 +1,33 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
-import "../styles/Dashboard.css"
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Dashboard.css";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState("overview")
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const profileRef = useRef(null)
+  const [activeTab, setActiveTab] = useState("overview");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const navigate = useNavigate();
 
   // Datos de ejemplo para usuarios
   const users = [
-    { id: 1, name: "Juan Pérez", email: "juan@example.com", type: "buyer", status: "active", joined: "2025-01-15" },
-    { id: 2, name: "María López", email: "maria@example.com", type: "seller", status: "active", joined: "2025-02-10" },
+    {
+      id: 1,
+      name: "Juan Pérez",
+      email: "juan@example.com",
+      type: "buyer",
+      status: "active",
+      joined: "2025-01-15",
+    },
+    {
+      id: 2,
+      name: "María López",
+      email: "maria@example.com",
+      type: "seller",
+      status: "active",
+      joined: "2025-02-10",
+    },
     {
       id: 3,
       name: "Carlos Ruiz",
@@ -21,17 +36,59 @@ const AdminDashboard = () => {
       status: "inactive",
       joined: "2025-03-05",
     },
-    { id: 4, name: "Ana Gómez", email: "ana@example.com", type: "seller", status: "active", joined: "2025-03-20" },
-  ]
+    {
+      id: 4,
+      name: "Ana Gómez",
+      email: "ana@example.com",
+      type: "seller",
+      status: "active",
+      joined: "2025-03-20",
+    },
+  ];
 
   // Datos de ejemplo para productos
   const products = [
-    { id: 1, name: "Pizza Familiar", seller: "María López", category: "food", price: 12.99, status: "approved" },
-    { id: 2, name: "Hamburguesa Doble", seller: "María López", category: "food", price: 8.5, status: "approved" },
-    { id: 3, name: "Papas Fritas", seller: "Ana Gómez", category: "snacks", price: 3.99, status: "pending" },
-    { id: 4, name: "Doritos", seller: "Ana Gómez", category: "snacks", price: 2.5, status: "approved" },
-    { id: 5, name: "Cuaderno", seller: "Pedro Sánchez", category: "material", price: 1.99, status: "rejected" },
-  ]
+    {
+      id: 1,
+      name: "Pizza Familiar",
+      seller: "María López",
+      category: "food",
+      price: 12.99,
+      status: "approved",
+    },
+    {
+      id: 2,
+      name: "Hamburguesa Doble",
+      seller: "María López",
+      category: "food",
+      price: 8.5,
+      status: "approved",
+    },
+    {
+      id: 3,
+      name: "Papas Fritas",
+      seller: "Ana Gómez",
+      category: "snacks",
+      price: 3.99,
+      status: "pending",
+    },
+    {
+      id: 4,
+      name: "Doritos",
+      seller: "Ana Gómez",
+      category: "snacks",
+      price: 2.5,
+      status: "approved",
+    },
+    {
+      id: 5,
+      name: "Cuaderno",
+      seller: "Pedro Sánchez",
+      category: "material",
+      price: 1.99,
+      status: "rejected",
+    },
+  ];
 
   // Datos de ejemplo para estadísticas
   const stats = {
@@ -40,30 +97,39 @@ const AdminDashboard = () => {
     totalProducts: 287,
     totalOrders: 1243,
     revenue: 15678.9,
-  }
+  };
 
   // Cerrar el menú cuando se hace clic fuera de él
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false)
+        setIsProfileOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleProfileClick = () => {
-    setIsProfileOpen(!isProfileOpen)
-  }
+    setIsProfileOpen(!isProfileOpen);
+  };
 
-  const handleLogout = () => {
-    // Aquí irá tu lógica de cierre de sesión
-    console.log("Cerrando sesión...")
-  }
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      navigate("/");
+    } catch (err) {
+      console.error("Error al cerrar sesión:", err);
+      alert("No se pudo cerrar sesión correctamente.");
+    }
+  };
 
   return (
     <div className="dashboard-container admin-dashboard">
@@ -82,10 +148,16 @@ const AdminDashboard = () => {
               <img src="/placeholder.svg?height=40&width=40" alt="Perfil" />
             </button>
             <div className={`dropdown-menu ${isProfileOpen ? "show" : ""}`}>
-              <button className="dropdown-item" onClick={() => console.log("Perfil")}>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Perfil")}
+              >
                 Mi Perfil
               </button>
-              <button className="dropdown-item" onClick={() => console.log("Configuración")}>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Configuración")}
+              >
                 Configuración
               </button>
               <button className="dropdown-item logout" onClick={handleLogout}>
@@ -99,37 +171,58 @@ const AdminDashboard = () => {
       <div className="admin-sidebar">
         <ul>
           <li>
-            <button className={activeTab === "overview" ? "active" : ""} onClick={() => setActiveTab("overview")}>
+            <button
+              className={activeTab === "overview" ? "active" : ""}
+              onClick={() => setActiveTab("overview")}
+            >
               Vista General
             </button>
           </li>
           <li>
-            <button className={activeTab === "users" ? "active" : ""} onClick={() => setActiveTab("users")}>
+            <button
+              className={activeTab === "users" ? "active" : ""}
+              onClick={() => setActiveTab("users")}
+            >
               Usuarios
             </button>
           </li>
           <li>
-            <button className={activeTab === "products" ? "active" : ""} onClick={() => setActiveTab("products")}>
+            <button
+              className={activeTab === "products" ? "active" : ""}
+              onClick={() => setActiveTab("products")}
+            >
               Productos
             </button>
           </li>
           <li>
-            <button className={activeTab === "categories" ? "active" : ""} onClick={() => setActiveTab("categories")}>
+            <button
+              className={activeTab === "categories" ? "active" : ""}
+              onClick={() => setActiveTab("categories")}
+            >
               Categorías
             </button>
           </li>
           <li>
-            <button className={activeTab === "orders" ? "active" : ""} onClick={() => setActiveTab("orders")}>
+            <button
+              className={activeTab === "orders" ? "active" : ""}
+              onClick={() => setActiveTab("orders")}
+            >
               Pedidos
             </button>
           </li>
           <li>
-            <button className={activeTab === "reports" ? "active" : ""} onClick={() => setActiveTab("reports")}>
+            <button
+              className={activeTab === "reports" ? "active" : ""}
+              onClick={() => setActiveTab("reports")}
+            >
               Reportes
             </button>
           </li>
           <li>
-            <button className={activeTab === "settings" ? "active" : ""} onClick={() => setActiveTab("settings")}>
+            <button
+              className={activeTab === "settings" ? "active" : ""}
+              onClick={() => setActiveTab("settings")}
+            >
               Configuración
             </button>
           </li>
@@ -203,7 +296,11 @@ const AdminDashboard = () => {
               <h2>Gestión de Usuarios</h2>
               <div className="actions">
                 <button className="add-product-btn">+ Añadir Usuario</button>
-                <input type="text" placeholder="Buscar usuarios..." className="search-input" />
+                <input
+                  type="text"
+                  placeholder="Buscar usuarios..."
+                  className="search-input"
+                />
               </div>
             </div>
 
@@ -241,7 +338,11 @@ const AdminDashboard = () => {
                     <td>{user.email}</td>
                     <td>
                       <span className={`user-type ${user.type}`}>
-                        {user.type === "buyer" ? "Comprador" : user.type === "seller" ? "Vendedor" : "Admin"}
+                        {user.type === "buyer"
+                          ? "Comprador"
+                          : user.type === "seller"
+                          ? "Vendedor"
+                          : "Admin"}
                       </span>
                     </td>
                     <td>
@@ -274,7 +375,11 @@ const AdminDashboard = () => {
             <div className="section-header">
               <h2>Gestión de Productos</h2>
               <div className="actions">
-                <input type="text" placeholder="Buscar productos..." className="search-input" />
+                <input
+                  type="text"
+                  placeholder="Buscar productos..."
+                  className="search-input"
+                />
               </div>
             </div>
 
@@ -319,8 +424,8 @@ const AdminDashboard = () => {
                         {product.status === "approved"
                           ? "Aprobado"
                           : product.status === "pending"
-                            ? "Pendiente"
-                            : "Rechazado"}
+                          ? "Pendiente"
+                          : "Rechazado"}
                       </span>
                     </td>
                     <td className="actions">
@@ -348,7 +453,7 @@ const AdminDashboard = () => {
         <p>&copy; 2025 UNIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default AdminDashboard
+export default AdminDashboard;

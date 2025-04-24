@@ -1,28 +1,78 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
-import "../styles/Dashboard.css"
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Dashboard.css";
 
 const SellerDashboard = () => {
-  const [activeTab, setActiveTab] = useState("products")
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const profileRef = useRef(null)
+  const [activeTab, setActiveTab] = useState("products");
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+  const navigate = useNavigate();
 
   // Datos de ejemplo para productos del vendedor
   const sellerProducts = [
-    { id: 1, name: "Pizza Familiar", price: 12.99, category: "food", status: "active", sales: 24 },
-    { id: 2, name: "Hamburguesa Doble", price: 8.5, category: "food", status: "active", sales: 18 },
-    { id: 3, name: "Papas Fritas", price: 3.99, category: "snacks", status: "out_of_stock", sales: 35 },
-    { id: 4, name: "Doritos", price: 2.5, category: "snacks", status: "active", sales: 42 },
-  ]
+    {
+      id: 1,
+      name: "Pizza Familiar",
+      price: 12.99,
+      category: "food",
+      status: "active",
+      sales: 24,
+    },
+    {
+      id: 2,
+      name: "Hamburguesa Doble",
+      price: 8.5,
+      category: "food",
+      status: "active",
+      sales: 18,
+    },
+    {
+      id: 3,
+      name: "Papas Fritas",
+      price: 3.99,
+      category: "snacks",
+      status: "out_of_stock",
+      sales: 35,
+    },
+    {
+      id: 4,
+      name: "Doritos",
+      price: 2.5,
+      category: "snacks",
+      status: "active",
+      sales: 42,
+    },
+  ];
 
   // Datos de ejemplo para órdenes
   const orders = [
-    { id: 101, customer: "Juan Pérez", items: 3, total: 25.48, status: "pending", date: "2025-04-20" },
-    { id: 102, customer: "María López", items: 1, total: 12.99, status: "delivered", date: "2025-04-19" },
-    { id: 103, customer: "Carlos Ruiz", items: 2, total: 11.0, status: "in_progress", date: "2025-04-18" },
-  ]
+    {
+      id: 101,
+      customer: "Juan Pérez",
+      items: 3,
+      total: 25.48,
+      status: "pending",
+      date: "2025-04-20",
+    },
+    {
+      id: 102,
+      customer: "María López",
+      items: 1,
+      total: 12.99,
+      status: "delivered",
+      date: "2025-04-19",
+    },
+    {
+      id: 103,
+      customer: "Carlos Ruiz",
+      items: 2,
+      total: 11.0,
+      status: "in_progress",
+      date: "2025-04-18",
+    },
+  ];
 
   // Datos de ejemplo para estadísticas
   const stats = {
@@ -30,33 +80,42 @@ const SellerDashboard = () => {
     totalOrders: 89,
     pendingOrders: 12,
     topProduct: "Doritos",
-  }
+  };
 
   // Verificar si la suscripción está activa
-  const subscriptionActive = true
+  const subscriptionActive = true;
 
   // Cerrar el menú cuando se hace clic fuera de él
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (profileRef.current && !profileRef.current.contains(event.target)) {
-        setIsProfileOpen(false)
+        setIsProfileOpen(false);
       }
-    }
+    };
 
-    document.addEventListener("mousedown", handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleProfileClick = () => {
-    setIsProfileOpen(!isProfileOpen)
-  }
+    setIsProfileOpen(!isProfileOpen);
+  };
 
-  const handleLogout = () => {
-    // Aquí irá tu lógica de cierre de sesión
-    console.log("Cerrando sesión...")
-  }
+  const handleLogout = async () => {
+    try {
+      await fetch("http://localhost:3000/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      navigate("/");
+    } catch (err) {
+      console.error("Error al cerrar sesión:", err);
+      alert("No se pudo cerrar sesión correctamente.");
+    }
+  };
 
   return (
     <div className="dashboard-container seller-dashboard">
@@ -75,10 +134,16 @@ const SellerDashboard = () => {
               <img src="/placeholder.svg?height=40&width=40" alt="Perfil" />
             </button>
             <div className={`dropdown-menu ${isProfileOpen ? "show" : ""}`}>
-              <button className="dropdown-item" onClick={() => console.log("Perfil")}>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Perfil")}
+              >
                 Mi Perfil
               </button>
-              <button className="dropdown-item" onClick={() => console.log("Configuración")}>
+              <button
+                className="dropdown-item"
+                onClick={() => console.log("Configuración")}
+              >
                 Configuración
               </button>
               <button className="dropdown-item logout" onClick={handleLogout}>
@@ -91,22 +156,37 @@ const SellerDashboard = () => {
 
       {!subscriptionActive && (
         <div className="subscription-banner">
-          <p>Tu suscripción de vendedor no está activa. Para publicar productos, debes activar tu suscripción.</p>
+          <p>
+            Tu suscripción de vendedor no está activa. Para publicar productos,
+            debes activar tu suscripción.
+          </p>
           <button className="subscribe-button">Activar suscripción</button>
         </div>
       )}
 
       <div className="seller-tabs">
-        <button className={activeTab === "dashboard" ? "active" : ""} onClick={() => setActiveTab("dashboard")}>
+        <button
+          className={activeTab === "dashboard" ? "active" : ""}
+          onClick={() => setActiveTab("dashboard")}
+        >
           Dashboard
         </button>
-        <button className={activeTab === "products" ? "active" : ""} onClick={() => setActiveTab("products")}>
+        <button
+          className={activeTab === "products" ? "active" : ""}
+          onClick={() => setActiveTab("products")}
+        >
           Mis Productos
         </button>
-        <button className={activeTab === "orders" ? "active" : ""} onClick={() => setActiveTab("orders")}>
+        <button
+          className={activeTab === "orders" ? "active" : ""}
+          onClick={() => setActiveTab("orders")}
+        >
           Pedidos
         </button>
-        <button className={activeTab === "earnings" ? "active" : ""} onClick={() => setActiveTab("earnings")}>
+        <button
+          className={activeTab === "earnings" ? "active" : ""}
+          onClick={() => setActiveTab("earnings")}
+        >
           Ganancias
         </button>
       </div>
@@ -222,8 +302,8 @@ const SellerDashboard = () => {
                         {order.status === "pending"
                           ? "Pendiente"
                           : order.status === "in_progress"
-                            ? "En proceso"
-                            : "Entregado"}
+                          ? "En proceso"
+                          : "Entregado"}
                       </span>
                     </td>
                     <td>{order.date}</td>
@@ -300,7 +380,7 @@ const SellerDashboard = () => {
         <p>&copy; 2025 UNIIMarket - Todos los derechos reservados</p>
       </footer>
     </div>
-  )
-}
+  );
+};
 
-export default SellerDashboard
+export default SellerDashboard;
