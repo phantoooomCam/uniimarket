@@ -9,7 +9,67 @@ const SellerDashboard = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef(null);
   const navigate = useNavigate();
+  const [userInfo, setUserInfo] = useState(null);
 
+  // Efecto para cargar la información del usuario al montar el componente
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        // Llamada a la API para obtener la información del usuario
+        const response = await fetch("http://localhost:3000/api/auth/me", {
+          method: "GET",
+          credentials: "include", // Para incluir cookies en la solicitud
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUserInfo(userData);
+        } else {
+          console.error("No se pudo obtener la información del usuario");
+        }
+      } catch (err) {
+        console.error("Error al obtener información del usuario:", err);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
+  // Función para obtener las iniciales del nombre
+  const getUserInitials = (user) => {
+    if (!user) return "";
+
+    // Obtener la inicial del nombre y del apellido
+    const firstInitial = user.nombre ? user.nombre.charAt(0) : "";
+    const lastInitial = user.apellidos ? user.apellidos.charAt(0) : "";
+
+    return `${firstInitial}${lastInitial}`.toUpperCase();
+  };
+
+  // Generar un color basado en el nombre (para tener un color consistente para cada usuario)
+  const getProfileColor = (user) => {
+    if (!user) return "#6366F1"; // Color por defecto
+
+    const fullName = `${user.nombre} ${user.apellidos}`;
+    let hash = 0;
+    for (let i = 0; i < fullName.length; i++) {
+      hash = fullName.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    const colors = [
+      "#EF4444", // Rojo
+      "#F59E0B", // Ámbar
+      "#10B981", // Esmeralda
+      "#3B82F6", // Azul
+      "#8B5CF6", // Violeta
+      "#EC4899", // Rosa
+      "#6366F1", // Índigo
+      "#14B8A6", // Turquesa
+    ];
+
+    // Seleccionar un color basado en el hash
+    return colors[Math.abs(hash) % colors.length];
+  };
   // Datos de ejemplo para productos del vendedor
   const sellerProducts = [
     {
@@ -130,8 +190,24 @@ const SellerDashboard = () => {
             Notificaciones
           </Link>
           <div className="user-profile" ref={profileRef}>
-            <button className="profile-button" onClick={handleProfileClick}>
-              <img src="/placeholder.svg?height=40&width=40" alt="Perfil" />
+            <button
+              className="profile-button"
+              onClick={handleProfileClick}
+              style={{
+                backgroundColor: getProfileColor(userInfo),
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#FFFFFF",
+                fontWeight: "bold",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {userInfo ? getUserInitials(userInfo) : ""}
             </button>
             <div className={`dropdown-menu ${isProfileOpen ? "show" : ""}`}>
               <button
