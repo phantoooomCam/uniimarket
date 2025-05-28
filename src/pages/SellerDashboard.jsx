@@ -10,6 +10,7 @@ const SellerDashboard = () => {
   const profileRef = useRef(null);
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
+  const [sellerProducts, setSellerProducts] = useState([]);
 
   // Efecto para cargar la información del usuario al montar el componente
   useEffect(() => {
@@ -70,41 +71,33 @@ const SellerDashboard = () => {
     // Seleccionar un color basado en el hash
     return colors[Math.abs(hash) % colors.length];
   };
-  // Datos de ejemplo para productos del vendedor
-  const sellerProducts = [
-    {
-      id: 1,
-      name: "Pizza Familiar",
-      price: 12.99,
-      category: "food",
-      status: "active",
-      sales: 24,
-    },
-    {
-      id: 2,
-      name: "Hamburguesa Doble",
-      price: 8.5,
-      category: "food",
-      status: "active",
-      sales: 18,
-    },
-    {
-      id: 3,
-      name: "Papas Fritas",
-      price: 3.99,
-      category: "snacks",
-      status: "out_of_stock",
-      sales: 35,
-    },
-    {
-      id: 4,
-      name: "Doritos",
-      price: 2.5,
-      category: "snacks",
-      status: "active",
-      sales: 42,
-    },
-  ];
+
+  // Fetch para ver productors del vendedor
+
+  useEffect(() => {
+    const fetchMisProductos = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/productos/mios",
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setSellerProducts(data);
+        } else {
+          console.error("Error al obtener los productos del vendedor");
+        }
+      } catch (err) {
+        console.error("Error de conexión:", err);
+      }
+    };
+
+    if (userInfo) fetchMisProductos();
+  }, [userInfo]);
 
   // Datos de ejemplo para órdenes
   const orders = [
@@ -321,9 +314,10 @@ const SellerDashboard = () => {
                 {sellerProducts.map((product) => (
                   <tr key={product.id}>
                     <td>{product.id}</td>
-                    <td>{product.name}</td>
-                    <td>{product.category}</td>
-                    <td>${product.price.toFixed(2)}</td>
+                    <td>{product.nombre}</td>
+                    <td>{product.categoria}</td>
+                    <td>${parseFloat(product.precio).toFixed(2)}</td>
+
                     <td>
                       <span className={`status-badge ${product.status}`}>
                         {product.status === "active" ? "Activo" : "Sin stock"}
